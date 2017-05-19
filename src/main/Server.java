@@ -1,35 +1,40 @@
 package main;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
+import java.util.LinkedList;
 
 public class Server {
+	static ServerNit klijenti[] = new ServerNit[10];
+	
+	static LinkedList<ServerNit> muskarci = new LinkedList<>();
+	static LinkedList<ServerNit> zene = new LinkedList<>();
 
-	public static int port = 5533;
-	public static ServerSocket serverSoket;
-	public static Socket klijentSoket;
-	public static BufferedReader ulazOdKlijenta;
-	public static PrintStream izlazKaKlijentu;
+	public static void main(String[] args) {
+		int port = 9999;
 
-	public static void main(String[] args) throws Exception {
-		String recenica;
-		serverSoket = new ServerSocket(port);
-		while (true) {
-			klijentSoket = serverSoket.accept();
-			if (klijentSoket!=null) {
-				System.out.println("Klijent je konektovan!");
-			}
-			ulazOdKlijenta = new BufferedReader(new InputStreamReader(klijentSoket.getInputStream()));
-			izlazKaKlijentu = new PrintStream(klijentSoket.getOutputStream());
-			izlazKaKlijentu.println("Dobrodosli!");
-			recenica = ulazOdKlijenta.readLine();
-			System.out.println(recenica);
-			//logika
+		if (args.length > 0) {
+			port = Integer.parseInt(args[0]);
 		}
-		
-		
+
+		Socket klijentSoket = null;
+		try {
+			ServerSocket serverSoket = new ServerSocket(port);
+			while (true) {
+				
+				klijentSoket = serverSoket.accept();
+				
+				for (int i = 0; i < klijenti.length; i++) {
+					if (klijenti[i] == null) {
+						klijenti[i] = new ServerNit(klijentSoket, klijenti);
+						klijenti[i].start();
+						System.out.println("user je konektovan!");
+						break;
+					}
+				}
+			}
+		} catch (IOException e) {
+			System.out.println(e);
+		}
 	}
 }
