@@ -8,59 +8,96 @@ import java.net.Socket;
 import java.util.LinkedList;
 
 public class ServerNit extends Thread {
-	String linija;
-	String nik;
-	BufferedReader ulazniTokOdKlijenta = null;
+	BufferedReader ulazniTokOdKlijenata = null;
 	PrintStream izlazniTokKaKlijentu = null;
 	Socket soketZaKom = null;
-	public boolean uIgri;
-	
-	ServerNit[] klijenti;
-	
-	public ServerNit(Socket soket, ServerNit[] klijent) {
-		 this.soketZaKom = soket;
-		 this.klijenti = klijent;
+	LinkedList<ServerNit> klijenti;
+	String linija;
+	String ime;
+	boolean uIgri = false;
+
+	public ServerNit(Socket soket, LinkedList<ServerNit> klijent) {
+		this.soketZaKom = soket;
+		this.klijenti = klijent;
 	}
-	
+
 	public void run() {
-		
 		try {
-			ulazniTokOdKlijenta = new BufferedReader(new InputStreamReader(soketZaKom.getInputStream()));
+			ulazniTokOdKlijenata = new BufferedReader(new InputStreamReader(soketZaKom.getInputStream()));
 			izlazniTokKaKlijentu = new PrintStream(soketZaKom.getOutputStream());
-			
-			izlazniTokKaKlijentu.println("***** Uspesno ste se povezali na server *****");
-			izlazniTokKaKlijentu.println("Unesite nickname: ");
-			nik = ulazniTokOdKlijenta.readLine();
-			izlazniTokKaKlijentu.println("Dobrodosao/la <" + nik + ">.\nZa izlaz unessite /quit");
-			
-			while (true) {
-				linija = ulazniTokOdKlijenta.readLine();
-				if (linija.startsWith("/quit")) {
+			int brojac = 0;
+			while (brojac != 1) {
+				brojac = 0;
+				izlazniTokKaKlijentu.println("Unesite ime: ");
+				ime = ulazniTokOdKlijenata.readLine();
+				if (klijenti.size() == 1) {
 					break;
 				}
-				for (int i = 0; i < klijenti.length; i++) {
-					if (klijenti[i] != null && linija != null) {
-						klijenti[i].izlazniTokKaKlijentu.println("<" + nik + "> " + linija);
+				for (int i = 0; i < klijenti.size(); i++) {
+					if (klijenti.get(i) == this || klijenti.get(i).ime.equals(this.ime)) {
+						brojac++;
 					}
 				}
+				if (brojac != 1) {
+					izlazniTokKaKlijentu.print("Ime vec postoji. ");
+				}
 			}
+			izlazniTokKaKlijentu.println("Ovo su dostupni klijenti: ");
+
+			if (klijenti.size() == 1) {
+				izlazniTokKaKlijentu.println("Trenutno nema igraca na serveru, sacekajte");
+			} else {
+				izlazniTokKaKlijentu.println("Odaberite protivnika: ");
+				for (int i = 0; i < klijenti.size(); i++) {
+					if (klijenti.get(i) == this) {
+						continue;
+					}
+					izlazniTokKaKlijentu.println(klijenti.get(i).ime);
+				}
+				izlazniTokKaKlijentu.println("------------------------------------------------------");
+				izlazniTokKaKlijentu.println("Zelim da igram protiv: ");
+			}
+
+			String odabraniProtivnik = ulazniTokOdKlijenata.readLine();
 			
-			for (int i = 0; i < klijenti.length; i++) {
-				if (klijenti[i] != null) {
-					klijenti[i].izlazniTokKaKlijentu.println("***Korisnik " + nik + " izlazi iz chat sobe!!! ***");
+			for (int i = 0; i < klijenti.size(); i++) {
+				if (klijenti.get(i).ime.equals(odabraniProtivnik)) {
+					klijenti.get(i).izlazniTokKaKlijentu.println("Izazvani ste od <" + this.ime + "> na duel");
+					klijenti.get(i).izlazniTokKaKlijentu.println("DA, NE ?");
+					if(klijenti.get(i).ulazniTokOdKlijenata.readLine().equalsIgnoreCase("DA")){
+						klijenti.get(i).uIgri = true;
+						this.uIgri = true;
+					}
+					break;
 				}
 			}
 			
-			izlazniTokKaKlijentu.println("*** Dovidjenja " + nik + " ***");
 			
+			
+			while (true) {
+				linija = ulazniTokOdKlijenata.readLine();
+				if (true) {
+					break;
+				}
+			}
+
 			soketZaKom.close();
-		} catch (IOException ex) {
+
+		} catch (
+
+		IOException ex)
+
+		{
 			ex.printStackTrace();
 		}
-		
-		for (int i = 0; i < klijenti.length; i++) {
-			if (klijenti[i] == this) {
-				klijenti[i] = null;
+		/* oslobadja mesto korisnika koji izlazi */
+		for (
+
+		int i = 0; i < klijenti.size(); i++)
+
+		{
+			if (klijenti.get(i) == this) {
+				klijenti.remove(i);
 			}
 		}
 	}
