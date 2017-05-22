@@ -26,22 +26,43 @@ public class ServerNit extends Thread {
 			ulazniTokOdKlijenata = new BufferedReader(new InputStreamReader(soketZaKom.getInputStream()));
 			izlazniTokKaKlijentu = new PrintStream(soketZaKom.getOutputStream());
 			String temp = null;
+			//-------------------------
 			while (true) {
+				izlazniTokKaKlijentu.println("Unesite ime: "); // da bi pratili
+				temp = ulazniTokOdKlijenata.readLine();
+				izlazniTokKaKlijentu.println("Promenjiva temp je dobila vrednost " + temp);
+				temp = proveriIme(temp);
+				if (temp.equals("Postoji ime")) {
+					izlazniTokKaKlijentu.println("Opet unesi ime: ");
+					System.out.println("Poslao je klijentu da je ime pogresno");
+				} else {
+					izlazniTokKaKlijentu.println("Ime je ispravno");
+					System.out.println("Poslao je klijentu da je ime ispravno");
+					this.ime = temp;
+					break;
+				}
+			}
+			//-------------------------
+			/*while (true) {
 				izlazniTokKaKlijentu.println("Unesite ime: "); // da bi pratili
 				while (temp == null) {
 					temp = ulazniTokOdKlijenata.readLine();
 					System.out.println(temp);
 				}
+				izlazniTokKaKlijentu.println("Promenjiva temp je dobila vrednost " + temp);
 				temp = proveriIme(temp);
 				if (temp.equals("Postoji ime")) {
 					izlazniTokKaKlijentu.println("Opet unesi ime: ");
+					System.out.println("Poslao je klijentu da je ime pogresno");
+					break;
 				} else {
 					izlazniTokKaKlijentu.println("Ime je ispravno");
+					System.out.println("Poslao je klijentu da je ime ispravno");
 					this.ime = temp;
 					break;
 				}
 			}
-
+*/
 			// int brojac = 0;
 			// while (brojac != 1) {
 			// brojac = 0;
@@ -121,7 +142,7 @@ public class ServerNit extends Thread {
 			}
 
 			for (int i = 0; i < klijenti.size(); i++) {
-				if (klijenti.get(i).ime.equals(imeZaProveriti)) {
+				if (klijenti.get(i).ime != null && klijenti.get(i).ime.equals(imeZaProveriti)) {
 					System.out.println("Postoji ime: " + imeZaProveriti);
 					return "Postoji ime";
 				}
