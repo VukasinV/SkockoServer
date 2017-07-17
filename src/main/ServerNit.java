@@ -15,6 +15,8 @@ public class ServerNit extends Thread {
 	String linija;
 	String ime;
 	boolean uIgri = false;
+	
+	//Ovo je poslednji kod
 
 	public ServerNit(Socket soket, LinkedList<ServerNit> klijent) {
 		this.soketZaKom = soket;
