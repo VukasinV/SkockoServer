@@ -43,6 +43,14 @@ public class ServerNit extends Thread {
 					this.ime = temp;
 					break;
 				}
+				
+			}
+			
+			while (true) {
+				if (ulazniTokOdKlijenata.readLine().equals("posalji listu")) {
+					izlazniTokKaKlijentu.println(posaljiListu());
+					break;
+				}
 			}
 			//-------------------------
 			/*while (true) {
@@ -133,6 +141,22 @@ public class ServerNit extends Thread {
 		}
 	}
 
+	public String posaljiListu (){
+		String lista = "Lista,";
+		if (klijenti.size() == 1) {
+			return "PLista";
+		}
+		for (int i = 0; i < klijenti.size(); i++) {
+			if(klijenti.get(i)!=this){
+			lista = lista + klijenti.get(i).ime + ","; 
+			}
+		}
+		
+		return lista;
+	}
+	
+	
+	
 	public String proveriIme(String s) {
 		if (s == null)
 			return null;
