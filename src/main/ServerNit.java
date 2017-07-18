@@ -15,8 +15,9 @@ public class ServerNit extends Thread {
 	String linija;
 	String ime;
 	boolean uIgri = false;
-	
-	//Ovo je poslednji kod
+	String protivnik;
+
+	// Ovo je poslednji kod
 
 	public ServerNit(Socket soket, LinkedList<ServerNit> klijent) {
 		this.soketZaKom = soket;
@@ -28,7 +29,7 @@ public class ServerNit extends Thread {
 			ulazniTokOdKlijenata = new BufferedReader(new InputStreamReader(soketZaKom.getInputStream()));
 			izlazniTokKaKlijentu = new PrintStream(soketZaKom.getOutputStream());
 			String temp = null;
-			//-------------------------
+			// -------------------------
 			while (true) {
 				izlazniTokKaKlijentu.println("Unesite ime: "); // da bi pratili
 				temp = ulazniTokOdKlijenata.readLine();
@@ -43,36 +44,41 @@ public class ServerNit extends Thread {
 					this.ime = temp;
 					break;
 				}
-				
 			}
-			
+
 			while (true) {
 				if (ulazniTokOdKlijenata.readLine().equals("posalji listu")) {
 					izlazniTokKaKlijentu.println(posaljiListu());
 					break;
 				}
 			}
-			//-------------------------
-			/*while (true) {
-				izlazniTokKaKlijentu.println("Unesite ime: "); // da bi pratili
-				while (temp == null) {
-					temp = ulazniTokOdKlijenata.readLine();
-					System.out.println(temp);
-				}
-				izlazniTokKaKlijentu.println("Promenjiva temp je dobila vrednost " + temp);
-				temp = proveriIme(temp);
-				if (temp.equals("Postoji ime")) {
-					izlazniTokKaKlijentu.println("Opet unesi ime: ");
-					System.out.println("Poslao je klijentu da je ime pogresno");
-					break;
-				} else {
-					izlazniTokKaKlijentu.println("Ime je ispravno");
-					System.out.println("Poslao je klijentu da je ime ispravno");
-					this.ime = temp;
+
+			while (true) {
+				temp = ulazniTokOdKlijenata.readLine();
+				if (temp.startsWith("Zelim da igram sa:")) {
+					for (int i = 0; i < klijenti.size(); i++) {
+						String pomocna = temp.split(":")[1];
+						if (klijenti.get(i).ime.equals(pomocna)) {
+							klijenti.get(i).izlazniTokKaKlijentu.println("Izazvao Vas je igrac @" + this.ime);
+						}
+					}
 					break;
 				}
 			}
-*/
+			// -------------------------
+			/*
+			 * while (true) { izlazniTokKaKlijentu.println("Unesite ime: "); //
+			 * da bi pratili while (temp == null) { temp =
+			 * ulazniTokOdKlijenata.readLine(); System.out.println(temp); }
+			 * izlazniTokKaKlijentu.println(
+			 * "Promenjiva temp je dobila vrednost " + temp); temp =
+			 * proveriIme(temp); if (temp.equals("Postoji ime")) {
+			 * izlazniTokKaKlijentu.println("Opet unesi ime: ");
+			 * System.out.println("Poslao je klijentu da je ime pogresno");
+			 * break; } else { izlazniTokKaKlijentu.println("Ime je ispravno");
+			 * System.out.println("Poslao je klijentu da je ime ispravno");
+			 * this.ime = temp; break; } }
+			 */
 			// int brojac = 0;
 			// while (brojac != 1) {
 			// brojac = 0;
@@ -141,22 +147,35 @@ public class ServerNit extends Thread {
 		}
 	}
 
-	public String posaljiListu (){
+	public void spoji(String ime) {
+		this.uIgri = true;
+		this.protivnik = ime;
+		for (int i = 0; i < klijenti.size(); i++) {
+			if (klijenti.get(i).ime.equals(ime)) {
+				klijenti.get(i).uIgri = true;
+				klijenti.get(i).protivnik = this.ime;
+			}
+		}
+	}
+
+	public void ovoDvojeRolaju() {
+
+	}
+
+	public String posaljiListu() {
 		String lista = "Lista,";
 		if (klijenti.size() == 1) {
 			return "PLista";
 		}
 		for (int i = 0; i < klijenti.size(); i++) {
-			if(klijenti.get(i)!=this){
-			lista = lista + klijenti.get(i).ime + ","; 
+			if (klijenti.get(i) != this) {
+				lista = lista + klijenti.get(i).ime + ",";
 			}
 		}
-		
+
 		return lista;
 	}
-	
-	
-	
+
 	public String proveriIme(String s) {
 		if (s == null)
 			return null;
