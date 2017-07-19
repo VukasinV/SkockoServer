@@ -17,8 +17,6 @@ public class ServerNit extends Thread {
 	boolean uIgri = false;
 	String protivnik;
 
-	// Ovo je poslednji kod
-
 	public ServerNit(Socket soket, LinkedList<ServerNit> klijent) {
 		this.soketZaKom = soket;
 		this.klijenti = klijent;
@@ -65,6 +63,38 @@ public class ServerNit extends Thread {
 					break;
 				}
 			}
+
+			Game igra = new Game();
+			while (true) {
+				System.out.println("Usao u while");
+				temp = ulazniTokOdKlijenata.readLine();
+				if (temp != null) {
+				System.out.println("vghhcgchgchcghs" + temp);
+				if (temp.startsWith("Kombinacija,")) {
+					String a = temp.split(",")[1];
+					String b = temp.split(",")[2];
+					String c = temp.split(",")[3];
+					String d = temp.split(",")[4];
+
+					System.out.println("NESTO u ifu");
+
+					int brojPOGNAMESTU = igra.vratiBrojPogodjenih(Integer.parseInt(a), Integer.parseInt(b),
+							Integer.parseInt(c), Integer.parseInt(d), true);
+					int brojPOG = igra.vratiBrojPogodjenih(Integer.parseInt(a), Integer.parseInt(b),
+							Integer.parseInt(c), Integer.parseInt(d), false);
+					izlazniTokKaKlijentu.println("Kombinacija" + brojPOGNAMESTU + "," + brojPOG);
+
+					System.out.println("poslao je kombinaciju klijentu");
+				}
+
+				System.out.println(",...");
+				break;
+				} else {
+					System.out.println("temp je null iz nekog razloga");
+				}
+
+			}
+
 			// -------------------------
 			/*
 			 * while (true) { izlazniTokKaKlijentu.println("Unesite ime: "); //
